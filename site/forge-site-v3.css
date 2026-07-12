@@ -1,14 +1,17 @@
 /* Forge — marketing site v2. Simplified hero, real nav, less "template" chrome. */
 
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+/* overflow-x: clip (not hidden) — `hidden` on the root <html> makes iOS Safari
+   collapse content into a narrow left-hugging column with dead space on the right.
+   `clip` gives the same overflow backstop without the scroll-container squeeze. */
+html { scroll-behavior: smooth; overflow-x: clip; }
 html, body { margin: 0; padding: 0; }
 body {
   font-family: "Inter", -apple-system, system-ui, sans-serif;
   background: #0B1710;
   color: #1A1814;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 a { color: #1E4D35; text-decoration: none; }
 a:hover { color: #2E6B49; }
@@ -203,7 +206,9 @@ button, input { font-family: inherit; }
 
 /* ═══════════ features — editorial, no chip clutter ═══════════ */
 .features { background: #F4F2ED; }
-.feature { padding: 68px 0 26px; }
+/* NB: use vertical longhands so .shell's `padding: 0 24px` (horizontal) survives —
+   a `padding` shorthand here would zero the side padding and clip 01 / the rule. */
+.feature { padding-top: 68px; padding-bottom: 26px; }
 .feature:last-of-type { padding-bottom: 72px; }
 .f-rule { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
 .f-rule .n { font-size: 13px; font-weight: 800; letter-spacing: 1px; color: #14301F; }
