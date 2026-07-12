@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Forge — Join the Waitlist</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400..900&display=swap" rel="stylesheet">
+<style>
+/* forgendurance.com/waitlist — V2 "Product peek": email up top, the app rises from the fold */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font-family: "Inter", -apple-system, system-ui, sans-serif; background: #040A07; -webkit-font-smoothing: antialiased; }
+a { color: #9ED4B4; text-decoration: none; }
+a:hover { color: #F4F2ED; }
+button, input { font-family: inherit; }
+
+.page {
+  position: relative; width: 100%; max-width: 430px; margin: 0 auto;
+  height: 100svh; min-height: 640px; display: flex; flex-direction: column; overflow: hidden;
+  background: linear-gradient(168deg, #1C4530 0%, #123322 44%, #0B1F14 78%, #07140D 100%);
+}
+@media (min-width: 500px) { .page { box-shadow: 0 0 120px rgba(0,0,0,0.55); } }
+.grain { position: absolute; inset: 0; pointer-events: none; opacity: 0.5;
+  background: radial-gradient(90% 60% at 18% 8%, rgba(123,194,149,0.13), transparent 60%),
+              radial-gradient(70% 50% at 90% 92%, rgba(0,0,0,0.5), transparent 65%); }
+.inner { position: relative; display: flex; flex-direction: column; flex: 1; min-height: 0; padding: 22px 26px 0; }
+
+.top { display: flex; align-items: center; justify-content: space-between; }
+.brand { display: flex; align-items: center; gap: 9px; color: #F4F2ED; font-size: 17px; font-weight: 800; letter-spacing: -0.3px; }
+.top .ig { font-size: 12.5px; font-weight: 600; color: rgba(237,236,234,0.55); }
+.top .ig:hover { color: #9ED4B4; }
+
+.kicker { display: flex; align-items: center; gap: 8px; margin: 36px 0 14px; font-size: 12.5px; font-weight: 600; letter-spacing: 0.4px; color: #9ED4B4; animation: riseIn 0.6s cubic-bezier(.16,1,.3,1) 0.5s both; }
+.kicker .dot { width: 6px; height: 6px; border-radius: 50%; background: #7BC295; animation: pulseDot 2.2s ease-in-out infinite; }
+@keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+h1 { margin: 0; font-size: clamp(38px, 10.5vw, 44px); line-height: 1.02; font-weight: 800; letter-spacing: -1.8px; color: #F4F2ED; animation: riseIn 0.7s cubic-bezier(.16,1,.3,1) 0.15s both; }
+h1 .accent { color: #7BC295; }
+@keyframes riseIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+.cta-line { margin-top: 24px; max-width: 400px; animation: riseIn 0.7s cubic-bezier(.16,1,.3,1) 0.35s both; }
+.cta-field { position: relative; display: flex; align-items: center; height: 60px; border-radius: 30px; background: rgba(7,20,13,0.55); border: 1px solid rgba(123,194,149,0.4); transition: border-color 0.25s ease; animation: ctaBreathe 3.6s ease-in-out 2s infinite; }
+@keyframes ctaBreathe { 0%, 100% { box-shadow: 0 0 24px 0 rgba(123,194,149,0.10); } 50% { box-shadow: 0 0 34px 4px rgba(123,194,149,0.26); } }
+.cta-field:focus-within { border-color: rgba(123,194,149,0.65); }
+.cta-field input { flex: 1; min-width: 0; height: 100%; background: none; border: none; padding: 0 12px 0 22px; color: #F4F2ED; font-size: 16px; }
+.cta-field input::placeholder { color: rgba(237,236,234,0.4); }
+.cta-field input:focus { outline: none; }
+.cta-field .go { flex: none; margin-right: 6px; height: 48px; padding: 0 19px; border-radius: 24px; border: none; cursor: pointer; background: #F4F2ED; color: #14301F; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; white-space: nowrap; box-shadow: 0 6px 18px rgba(0,0,0,0.3); transition: transform 0.25s cubic-bezier(.16,1,.3,1), background 0.25s ease; }
+.cta-field .go:hover { background: #FFFFFF; }
+.cta-field .go:active { transform: scale(0.92); }
+.cta-hint { margin: 11px 2px 0; font-size: 12.5px; color: rgba(237,236,234,0.5); }
+
+/* step 2: optional name + city */
+.cta-more { display: none; }
+.cta-line.step2 .cta-form, .cta-line.step2 .cta-hint { display: none; }
+.cta-line.step2 .cta-more { display: block; animation: riseIn 0.5s cubic-bezier(.16,1,.3,1) both; }
+.more-head { margin: 2px 2px 12px; font-size: 14.5px; color: rgba(237,236,234,0.7); }
+.more-head b { color: #9ED4B4; }
+.more-row { display: flex; gap: 8px; }
+.more-input { flex: 1; min-width: 0; height: 50px; border-radius: 25px; padding: 0 20px; background: rgba(7,20,13,0.5); border: 1px solid rgba(244,242,237,0.22); color: #F4F2ED; font-size: 16px; }
+.more-input::placeholder { color: rgba(237,236,234,0.4); }
+.more-input:focus { outline: none; border-color: rgba(123,194,149,0.65); }
+.more-btn { width: 100%; height: 50px; margin-top: 8px; border-radius: 25px; border: none; cursor: pointer; background: #F4F2ED; color: #14301F; font-size: 15px; font-weight: 700; }
+.more-btn:active { transform: scale(0.98); }
+.more-skip { width: 100%; height: 38px; margin-top: 2px; border: none; background: none; cursor: pointer; color: rgba(237,236,234,0.5); font-size: 13px; font-weight: 500; }
+.more-skip:hover { color: rgba(237,236,234,0.75); }
+
+/* success */
+.cta-done { display: none; align-items: center; gap: 12px; padding: 4px 2px; }
+.cta-done .check-ring { flex: none; width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(160deg, #4F9472, #1E4D35); display: flex; align-items: center; justify-content: center; }
+.cta-done .check-ring svg path { stroke-dasharray: 26; stroke-dashoffset: 26; }
+.cta-line.done .cta-form, .cta-line.done .cta-hint, .cta-line.done .cta-more { display: none; }
+.cta-line.done .cta-done { display: flex; }
+.cta-line.done .check-ring svg path { animation: drawCheck 0.4s cubic-bezier(.2,.7,.3,1) 0.15s both; }
+@keyframes drawCheck { to { stroke-dashoffset: 0; } }
+.cta-done b { display: block; color: #F4F2ED; font-size: 15px; font-weight: 700; }
+.cta-done p { margin: 2px 0 0; color: rgba(237,236,234,0.6); font-size: 13px; }
+
+/* ── the peek: app rises from the bottom of the fold ── */
+.peek { position: relative; flex: 1; min-height: 0; margin: 26px -26px 0; display: flex; justify-content: center; animation: peekUp 1s cubic-bezier(.16,1,.3,1) 0.6s both; }
+@keyframes peekUp { from { opacity: 0; transform: translateY(120px); } to { opacity: 1; transform: none; } }
+.peek-phone { width: min(272px, 66vw); border-radius: 40px 40px 0 0; background: #101210; padding: 9px 9px 0; box-shadow: 0 -20px 60px rgba(0,0,0,0.45); }
+.peek-phone img { width: 100%; display: block; border-radius: 32px 32px 0 0; }
+.peek-fade { position: absolute; inset: auto 0 0; height: 150px; background: linear-gradient(to top, rgba(4,10,7,0.88), transparent); pointer-events: none; }
+.peek-mark { display: none; }
+.peek-btn { position: absolute; left: 50%; bottom: 54px; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 26px; border-radius: 26px; background: #F4F2ED; color: #14301F; font-size: 14.5px; font-weight: 700; white-space: nowrap; box-shadow: 0 14px 40px rgba(0,0,0,0.5); transition: transform 0.25s cubic-bezier(.16,1,.3,1), background 0.25s ease; }
+.peek-btn:hover { background: #FFFFFF; color: #14301F; transform: translateX(-50%) scale(1.04); }
+.peek-btn:active { transform: translateX(-50%) scale(0.96); }
+
+/* legal strip pinned to the bottom of the page */
+.legal { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; padding: 0 26px 14px; }
+.legal small { color: rgba(237,236,234,0.4); font-size: 10.5px; }
+.legal .links { display: flex; gap: 13px; }
+.legal .links a { font-size: 11px; font-weight: 500; color: rgba(237,236,234,0.55); }
+.legal .links a:hover { color: #9ED4B4; }
+
+@media (prefers-reduced-motion: reduce) {
+  .kicker, h1, .cta-line, .peek { animation: none !important; opacity: 1 !important; transform: none !important; }
+  .cta-field, .kicker .dot { animation: none !important; }
+}
+
+/* ── desktop: headline + form left, phone peek right ── */
+@media (min-width: 900px) {
+  .page { max-width: none; box-shadow: none; }
+  .inner {
+    display: grid; grid-template-columns: 1.05fr 1fr; grid-template-rows: auto 1fr;
+    column-gap: 56px; width: 100%; max-width: 1200px; margin: 0 auto;
+    padding: 34px 64px 0;
+  }
+  .top { grid-column: 1 / -1; }
+  .hero-l { grid-column: 1; grid-row: 2; display: flex; flex-direction: column; justify-content: center; padding-bottom: 9vh; }
+  .kicker { margin-top: 0; }
+  h1 { font-size: clamp(56px, 5.6vw, 76px); letter-spacing: -3px; max-width: 9em; }
+  .cta-line { max-width: 470px; margin-top: 34px; }
+  .cta-field { height: 64px; border-radius: 32px; }
+  .cta-field .go { height: 52px; border-radius: 26px; padding: 0 22px; font-size: 14.5px; }
+  .peek { grid-column: 2; grid-row: 2; margin: 0; flex-direction: column; align-items: center; justify-content: center; gap: 30px; }
+  .peek-mark { display: block; position: absolute; width: 590px; height: 590px; top: 50%; left: 52%; transform: translate(-50%, -54%); pointer-events: none; }
+  .peek-phone {
+    position: relative; width: min(300px, 24vw); max-height: calc(100svh - 250px); overflow: hidden;
+    border-radius: 50px; padding: 10px; transform: rotate(-3deg);
+    border: 1px solid rgba(244,242,237,0.14);
+    box-shadow: 0 60px 110px -24px rgba(2,8,5,0.6), 0 0 90px rgba(123,194,149,0.15);
+  }
+  .peek-phone img { border-radius: 40px; }
+  .peek-fade { display: none; }
+  .peek-btn { position: relative; left: auto; bottom: auto; transform: none; height: 54px; padding: 0 28px; font-size: 15px; }
+  .peek-btn:hover { transform: scale(1.05); }
+  .peek-btn:active { transform: scale(0.96); }
+  .legal { padding: 0 64px 18px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Netlify Forms detection (hidden) -->
+<form name="waitlist" data-netlify="true" netlify-honeypot="bot-field" hidden aria-hidden="true">
+  <input type="hidden" name="form-name" value="waitlist">
+  <input type="email" name="email">
+  <input type="text" name="name">
+  <input type="text" name="city">
+  <input type="text" name="source">
+  <input type="text" name="bot-field">
+</form>
+
+<div class="page" data-screen-label="Waitlist page">
+  <div class="grain"></div>
+  <div class="inner">
+    <div class="top">
+      <span class="brand">
+        <svg width="22" height="22" viewBox="245 245 510 510" aria-hidden="true">
+          <path d="M336 404L749 250L749 359L305 524Z" fill="#F4F2ED"></path>
+          <path d="M295 575L638 451L576 542L250 749Z" fill="#F4F2ED"></path>
+        </svg>
+        Forge
+      </span>
+      <a class="ig" href="https://instagram.com/forgendurance">@forgendurance</a>
+    </div>
+
+    <div class="hero-l">
+    <p class="kicker"><span class="dot"></span>NYC — launching on iOS soon</p>
+    <h1>The endurance <span class="accent">society.</span></h1>
+
+    <div class="cta-line" id="cta">
+      <form class="cta-form" novalidate>
+        <div class="cta-field">
+          <input type="email" inputmode="email" autocomplete="email" placeholder="you@email.com" aria-label="Email address">
+          <button class="go" type="submit">
+            Get access
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </button>
+        </div>
+      </form>
+      <p class="cta-hint">First 500 get early access.</p>
+      <div class="cta-more">
+        <p class="more-head"><b>You're in.</b> Want us to match you faster?</p>
+        <div class="more-row">
+          <input class="more-input" type="text" autocomplete="given-name" placeholder="First name" aria-label="First name">
+          <input class="more-input" type="text" autocomplete="address-level2" placeholder="City" aria-label="City">
+        </div>
+        <button class="more-btn" type="button">Done</button>
+        <button class="more-skip" type="button">Skip — email is enough</button>
+      </div>
+      <div class="cta-done">
+        <span class="check-ring"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F4F2ED" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"></path></svg></span>
+        <div><b>You're on the list.</b><p>See you at the start line.</p></div>
+      </div>
+    </div>
+    </div>
+
+    <div class="peek">
+      <svg class="peek-mark" viewBox="245 245 510 510" aria-hidden="true">
+        <path d="M336 404L749 250L749 359L305 524Z" fill="rgba(244,242,237,0.06)"></path>
+        <path d="M295 575L638 451L576 542L250 749Z" fill="rgba(244,242,237,0.06)"></path>
+      </svg>
+      <div class="peek-phone"><img src="../site/screens/discover-nyc-final.png" alt="Forge Discover tab — group runs on a map of NYC"></div>
+      <div class="peek-fade"></div>
+      <a class="peek-btn" href="../index.html">
+        See the full site
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+      </a>
+    </div>
+  </div>
+  <div class="legal">
+    <small>© 2026 Forge Endurance Inc.</small>
+    <div class="links">
+      <a href="../site/privacy.html">Privacy</a>
+      <a href="../site/terms.html">Terms</a>
+      <a href="../site/support.html">Support</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// waitlist capture → Netlify Forms (same 'waitlist' form as the landing page)
+(function () {
+  var line = document.getElementById('cta');
+  var form = line.querySelector('form');
+  var submitted = false;
+  var pending = false;
+
+  function encode(data) {
+    return Object.keys(data).map(function (k) {
+      return encodeURIComponent(k) + '=' + encodeURIComponent(data[k] || '');
+    }).join('&');
+  }
+  function payload() {
+    var emailEl = form.querySelector('input');
+    var mores = line.querySelectorAll('.more-input');
+    return {
+      'form-name': 'waitlist',
+      email: emailEl ? (emailEl.value || '').trim() : '',
+      name: mores[0] ? (mores[0].value || '').trim() : '',
+      city: mores[1] ? (mores[1].value || '').trim() : '',
+      source: window.location.pathname,
+      'bot-field': ''
+    };
+  }
+  function submitWaitlist(beacon) {
+    if (submitted) return;
+    var data = payload();
+    if (!data.email) return;
+    submitted = true;
+    pending = false;
+    var body = encode(data);
+    var type = 'application/x-www-form-urlencoded';
+    if (beacon && navigator.sendBeacon) {
+      try { navigator.sendBeacon('/', new Blob([body], { type: type })); return; } catch (e) { /* fall through */ }
+    }
+    fetch('/', { method: 'POST', headers: { 'Content-Type': type }, body: body })
+      .catch(function () { /* never block the UI on a failed capture */ });
+  }
+  // if they enter an email then leave without finishing step 2, still capture it
+  window.addEventListener('pagehide', function () { if (pending) submitWaitlist(true); });
+
+  form.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var input = form.querySelector('input');
+    var val = (input.value || '').trim();
+    if (!val || val.indexOf('@') < 1 || val.indexOf('.') < 0) {
+      var field = form.querySelector('.cta-field');
+      field.style.borderColor = 'rgba(224,116,88,0.8)';
+      input.focus();
+      setTimeout(function () { field.style.borderColor = ''; }, 1600);
+      return;
+    }
+    pending = true;
+    line.classList.add('step2');
+    var first = line.querySelector('.more-input');
+    if (first) first.focus();
+  });
+  var finish = function () {
+    submitWaitlist();
+    line.classList.remove('step2');
+    line.classList.add('done');
+  };
+  line.querySelector('.more-btn').addEventListener('click', finish);
+  line.querySelector('.more-skip').addEventListener('click', finish);
+  line.querySelectorAll('.more-input').forEach(function (mi) {
+    mi.addEventListener('keydown', function (e) { if (e.key === 'Enter') finish(); });
+  });
+})();
+</script>
+</body>
+</html>

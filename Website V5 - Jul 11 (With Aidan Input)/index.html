@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Forge — Meet people. Find workouts. Train together.</title>
+<meta name="description" content="Forge connects runners and endurance athletes near you — matched to your pace, your sports, and your goals. Launching soon on iOS.">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site/forge-site-v3.css">
+</head>
+<body>
+
+<!-- Netlify Forms detection (hidden) -->
+<form name="waitlist" data-netlify="true" netlify-honeypot="bot-field" hidden aria-hidden="true">
+  <input type="hidden" name="form-name" value="waitlist">
+  <input type="email" name="email">
+  <input type="text" name="name">
+  <input type="text" name="city">
+  <input type="text" name="source">
+  <input type="text" name="bot-field">
+</form>
+
+<div class="page">
+
+<!-- ═══════════ TOP BAR ═══════════ -->
+<nav class="topbar" id="topbar" data-screen-label="Nav">
+  <div class="bar">
+    <a href="#top" class="brand" style="color:#F4F2ED;">
+      <svg width="24" height="24" viewBox="245 245 510 510" aria-hidden="true">
+        <path d="M336 404L749 250L749 359L305 524Z" fill="#F4F2ED"></path>
+        <path d="M295 575L638 451L576 542L250 749Z" fill="#F4F2ED"></path>
+      </svg>
+      <span class="wordmark">Forge</span>
+    </a>
+    <nav class="topnav" aria-label="Sections">
+      <a href="#discover">Discover</a>
+      <a href="#races">Races</a>
+      <a href="#forge">Forge</a>
+      <a href="#together">Messages</a>
+      <a href="#meet">Profiles</a>
+    </nav>
+  </div>
+</nav>
+
+<!-- ═══════════ HERO ═══════════ -->
+<header class="hero" id="top" data-screen-label="Hero">
+  <!-- double mark, à la app welcome screen: faint echo behind + gradient mark with drop shadow -->
+  <div class="mark-duo" aria-hidden="true">
+    <svg class="m-echo" viewBox="245 245 510 510">
+      <path d="M336 404L749 250L749 359L305 524Z" fill="rgba(244,242,237,0.07)"></path>
+      <path d="M295 575L638 451L576 542L250 749Z" fill="rgba(244,242,237,0.07)"></path>
+    </svg>
+    <svg class="m-front" viewBox="245 245 510 510">
+      <defs>
+        <linearGradient id="mgrad" x1="0" y1="0" x2="0.6" y2="1">
+          <stop offset="0" stop-color="#7BC295"></stop>
+          <stop offset="0.5" stop-color="#4F9472"></stop>
+          <stop offset="1" stop-color="#1E4D35"></stop>
+        </linearGradient>
+      </defs>
+      <path d="M336 404L749 250L749 359L305 524Z" fill="url(#mgrad)"></path>
+      <path d="M295 575L638 451L576 542L250 749Z" fill="url(#mgrad)"></path>
+    </svg>
+  </div>
+  <div class="hero-grain"></div>
+
+  <div class="shell hero-inner">
+    <div class="hero-main">
+      <h1 class="h-title">
+        <span><i>Meet</i></span>
+        <span><i>people.</i></span>
+        <span><i>Find</i></span>
+        <span><i>workouts.</i></span>
+        <span><i class="accent">Train</i></span>
+        <span><i class="accent">together.</i></span>
+      </h1>
+    </div>
+
+    <div class="cta-line" id="cta-top">
+      <form class="cta-form" novalidate>
+        <div class="cta-field">
+          <input type="email" inputmode="email" autocomplete="email" placeholder="you@email.com" aria-label="Email address">
+          <button class="go" type="submit">
+            Get access
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </button>
+        </div>
+      </form>
+      <div class="cta-more">
+        <p class="more-head"><b>You're in.</b> Want us to match you faster?</p>
+        <div class="more-row">
+          <input class="more-input" type="text" autocomplete="given-name" placeholder="First name" aria-label="First name">
+          <input class="more-input" type="text" autocomplete="address-level2" placeholder="City" aria-label="City">
+        </div>
+        <button class="more-btn" type="button">Done</button>
+        <button class="more-skip" type="button">Skip — email is enough</button>
+      </div>
+      <div class="cta-done">
+        <span class="check-ring"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F4F2ED" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"></path></svg></span>
+        <div><b>You're on the list.</b><p>See you at the start line.</p></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════ TICKER ═══════════ -->
+<div class="ticker" aria-hidden="true">
+  <div class="tick-track" id="ticker-track">
+    <span>Run<svg width="12" height="12" viewBox="245 245 510 510"><path d="M336 404L749 250L749 359L305 524Z" fill="#7BC295"></path><path d="M295 575L638 451L576 542L250 749Z" fill="#7BC295"></path></svg>Ride<svg width="12" height="12" viewBox="245 245 510 510"><path d="M336 404L749 250L749 359L305 524Z" fill="#7BC295"></path><path d="M295 575L638 451L576 542L250 749Z" fill="#7BC295"></path></svg>Swim<svg width="12" height="12" viewBox="245 245 510 510"><path d="M336 404L749 250L749 359L305 524Z" fill="#7BC295"></path><path d="M295 575L638 451L576 542L250 749Z" fill="#7BC295"></path></svg>Race<svg width="12" height="12" viewBox="245 245 510 510"><path d="M336 404L749 250L749 359L305 524Z" fill="#7BC295"></path><path d="M295 575L638 451L576 542L250 749Z" fill="#7BC295"></path></svg></span>
+  </div>
+</div>
+
+<!-- ═══════════ FEATURES — app tab order: Discover, Races, Forge, Messages, Profile ═══════════ -->
+<main class="features">
+
+  <!-- 01 · Discover -->
+  <section class="feature shell" id="discover" data-screen-label="01 Discover">
+    <div class="rv">
+      <div class="f-rule"><span class="n">01</span><span class="l">Discover</span></div>
+      <h2 class="f-title">Workouts,<br>near you.</h2>
+      <p class="f-sub">Group runs and track sessions on one map. Tap in, see who's going, show up.</p>
+    </div>
+    <div class="phone-wrap rv d1">
+      <div class="phone tilt-l">
+        <div class="screen"><img class="screen-img" src="site/screens/discover-nyc-final.png" alt="Discover tab screenshot"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 · Races -->
+  <section class="feature shell" id="races" data-screen-label="02 Races">
+    <div class="rv">
+      <div class="f-rule"><span class="n">02</span><span class="l">Races</span></div>
+      <h2 class="f-title">Race day,<br>together.</h2>
+      <p class="f-sub">Find local races, see who from Forge is racing, and share the start line.</p>
+    </div>
+    <div class="phone-wrap rv d1">
+      <div class="phone tilt-r">
+        <div class="screen"><img class="screen-img" src="site/screens/races-real-final.png" alt="Races screenshot"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 · Forge tab -->
+  <section class="feature shell" id="forge" data-screen-label="03 Forge">
+    <div class="rv">
+      <div class="f-rule"><span class="n">03</span><span class="l">The Forge tab</span></div>
+      <h2 class="f-title">Swipe. Match.<br>Forge.</h2>
+      <p class="f-sub">One athlete at a time — their sports, pace, and story. Hit Forge when it clicks. When they Forge back, you're connected.</p>
+    </div>
+    <div class="phone-wrap rv d1">
+      <div class="phone tilt-l">
+        <div class="screen"><img class="screen-img" src="site/screens/forge-swipe-will.png" alt="Forge tab screenshot"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 · Messages -->
+  <section class="feature shell" id="together" data-screen-label="04 Messages">
+    <div class="rv">
+      <div class="f-rule"><span class="n">04</span><span class="l">Messages</span></div>
+      <h2 class="f-title">Never train<br>alone again.</h2>
+      <p class="f-sub">Message your matches, lock in a plan, and log the miles side by side. The hard days feel easier with company.</p>
+    </div>
+    <div class="phone-wrap rv d1">
+      <div class="phone tilt-r">
+        <div class="screen"><img class="screen-img" src="site/screens/messages-final.png" alt="Messages screenshot"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 · Profile -->
+  <section class="feature shell" id="meet" data-screen-label="05 Profile">
+    <div class="rv">
+      <div class="f-rule"><span class="n">05</span><span class="l">Profiles</span></div>
+      <h2 class="f-title">Athletes,<br>not avatars.</h2>
+      <p class="f-sub">Profiles built around training, synced straight from Strava.</p>
+      <ul class="f-points">
+        <li>Photo-verified members — the green check means they're real</li>
+        <li>See mutual friends before you connect</li>
+        <li>Weekly mileage, race goals, and favorite routes up front</li>
+      </ul>
+    </div>
+    <div class="phone-wrap rv d1">
+      <div class="phone tilt-l">
+        <div class="screen"><img class="screen-img" src="site/screens/profile-verified.png" alt="Profile screenshot"></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ═══════════ FINAL CTA ═══════════ -->
+<section class="final" data-screen-label="Final CTA">
+  <div class="shell">
+    <div class="rv"><h2 class="final-title">Your crew is out there.</h2>
+    <p class="final-sub">Forge launches on iOS in the coming weeks. Get in before the first group run.</p></div>
+
+    <div class="cta-line rv d1" id="cta-bottom" style="margin-top: 30px;">
+      <form class="cta-form" novalidate>
+        <div class="cta-field">
+          <input type="email" inputmode="email" autocomplete="email" placeholder="you@email.com" aria-label="Email address">
+          <button class="go" type="submit">
+            Get access
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </button>
+        </div>
+      </form>
+      <div class="cta-more">
+        <p class="more-head"><b>You're in.</b> Want us to match you faster?</p>
+        <div class="more-row">
+          <input class="more-input" type="text" autocomplete="given-name" placeholder="First name" aria-label="First name">
+          <input class="more-input" type="text" autocomplete="address-level2" placeholder="City" aria-label="City">
+        </div>
+        <button class="more-btn" type="button">Done</button>
+        <button class="more-skip" type="button">Skip — email is enough</button>
+      </div>
+      <div class="cta-done">
+        <span class="check-ring"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F4F2ED" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"></path></svg></span>
+        <div><b>You're on the list.</b><p>See you at the start line.</p></div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <span class="fbrand">
+        <svg width="18" height="18" viewBox="245 245 510 510" aria-hidden="true"><path d="M336 404L749 250L749 359L305 524Z" fill="#F4F2ED"></path><path d="M295 575L638 451L576 542L250 749Z" fill="#F4F2ED"></path></svg>
+        Forge
+      </span>
+      <small>© 2026 Forge Endurance Inc.</small>
+    </footer>
+    <div class="footer-legal">
+      <a href="site/privacy.html">Privacy Policy</a>
+      <a href="site/terms.html">Terms of Use</a>
+      <a href="site/support.html">Support</a>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<!-- ═══════════ FLOATING DOCK NAV ═══════════ -->
+<nav class="dock" id="dock" data-screen-label="Dock nav" aria-label="Sections">
+  <a href="#discover" data-spy="discover">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.5-7-11a7 7 0 0114 0c0 5.5-7 11-7 11z"></path><circle cx="12" cy="10" r="2.6"></circle></svg>
+    <span>Discover</span>
+  </a>
+  <a href="#races" data-spy="races">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"></path><path d="M5 4c4-2.2 8 2.2 12 0v9c-4 2.2-8-2.2-12 0"></path></svg>
+    <span>Races</span>
+  </a>
+  <a href="#forge" data-spy="forge">
+    <svg width="17" height="17" viewBox="245 245 510 510"><path d="M336 404L749 250L749 359L305 524Z" fill="currentColor"></path><path d="M295 575L638 451L576 542L250 749Z" fill="currentColor"></path></svg>
+    <span>Forge</span>
+  </a>
+  <a href="#together" data-spy="together">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 01-9 8.4 8.6 8.6 0 01-3.7-.8L3 20l1-4.9a8.4 8.4 0 1117-3.6z"></path></svg>
+    <span>Messages</span>
+  </a>
+  <a href="#meet" data-spy="meet">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8.2" r="3.4"></circle><path d="M4.8 19.5c.8-3.8 3.8-5.7 7.2-5.7s6.4 1.9 7.2 5.7z"></path></svg>
+    <span>Profile</span>
+  </a>
+</nav>
+
+<script src="site/forge-site-v3.js"></script>
+</body>
+</html>

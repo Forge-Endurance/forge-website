@@ -1,0 +1,27 @@
+/* Forge — legal/support pages */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font-family: "Inter", -apple-system, system-ui, sans-serif; background: #F4F2ED; color: #1A1814; -webkit-font-smoothing: antialiased; }
+a { color: #1E4D35; text-decoration: underline; text-decoration-color: rgba(30,77,53,0.35); text-underline-offset: 3px; }
+a:hover { color: #2E6B49; }
+
+.page { max-width: 640px; margin: 0 auto; padding: 0 24px; }
+.lbar { height: 64px; display: flex; align-items: center; }
+.brand { display: flex; align-items: center; gap: 9px; text-decoration: none; }
+.brand span { font-size: 17px; font-weight: 800; letter-spacing: -0.3px; color: #14301F; }
+
+.doc { padding: 28px 0 40px; }
+.doc-kicker { margin: 0 0 10px; font-size: 12px; font-weight: 700; letter-spacing: 2.4px; text-transform: uppercase; color: #4F9472; }
+.doc h1 { margin: 0; font-size: 34px; font-weight: 800; letter-spacing: -1.2px; color: #14301F; }
+.doc-meta { margin: 10px 0 0; font-size: 13.5px; color: #8A8578; }
+.doc-meta em { color: #A87C08; font-style: normal; font-weight: 600; }
+
+.doc h2 { margin: 34px 0 10px; font-size: 19px; font-weight: 700; letter-spacing: -0.4px; color: #14301F; }
+.doc p, .doc li { font-size: 15px; line-height: 1.65; color: #3A3A36; }
+.doc p { margin: 0 0 12px; }
+.doc ul { margin: 0 0 12px; padding-left: 20px; }
+.doc li { margin-bottom: 8px; }
+.doc li::marker { color: #4F9472; }
+
+.lfoot { padding: 22px 0 40px; border-top: 1px solid rgba(20,48,31,0.14); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.lfoot small, .lfoot span { font-size: 12.5px; color: #8A8578; }
