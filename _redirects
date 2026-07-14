@@ -1,0 +1,3 @@
+# Profile QR links: any /u/{id} path serves the branded invite page.
+# 200 = rewrite (not a 301/302), so the URL stays /u/{id} in the address bar.
+/u/*   /u/index.html   200
