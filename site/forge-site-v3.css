@@ -79,7 +79,8 @@ button, input { font-family: inherit; }
 /* ═══════════ hero — stripped down ═══════════ */
 .hero {
   position: relative;
-  min-height: 100svh;
+  min-height: 100vh;   /* fallback for browsers without small-viewport units */
+  min-height: 100svh;  /* small viewport height — survives iOS Safari's collapsing chrome */
   background: linear-gradient(168deg, #1C4530 0%, #123322 44%, #0B1F14 78%, #07140D 100%);
   overflow: hidden;
   display: flex; flex-direction: column;
@@ -262,6 +263,17 @@ button, input { font-family: inherit; }
 
 /* topnav — desktop only */
 .topnav { display: none; }
+
+/* ── mobile/tablet hero: keep the "Get access" CTA above the fold ──
+   The CTA follows the subline (instead of being pinned to the bottom of the
+   fold, where iOS Safari's toolbar + home indicator hid it). The decorative
+   Forge mark drops below the CTA and may run past the fold — that's intended.
+   Scoped to <1024 so the desktop hero is untouched. */
+@media (max-width: 1023px) {
+  .hero-inner { padding-top: 72px; padding-bottom: 28px; }
+  .cta-line { margin-top: 32px; padding-top: 0; }
+  .mark-duo svg { top: 47%; }
+}
 
 /* ── tablet: framed phone ── */
 @media (min-width: 720px) and (max-width: 1023px) {
