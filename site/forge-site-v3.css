@@ -330,3 +330,15 @@ button, input { font-family: inherit; }
   .final .hero-ghost { display: none; }
   .footer { margin-top: 96px; }
 }
+
+/* ── Get Access button (replaces inline email capture) ── */
+.cta-btn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; max-width: 340px; margin: 0 auto; height: 62px; border-radius: 31px;
+  background: #F4F2ED; color: #14301F; font-size: 17px; font-weight: 800; letter-spacing: -0.2px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+  animation: ctaBreathe 3.6s ease-in-out 2s infinite;
+  transition: transform 0.25s cubic-bezier(.16,1,.3,1), background 0.25s ease;
+}
+.cta-btn:hover { background: #FFFFFF; color: #14301F; }
+.cta-btn:active { transform: scale(0.96); }
