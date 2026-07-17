@@ -89,7 +89,7 @@ body.is-done .done{display:flex}
     <form id="join-form" novalidate>
       <div class="field">
         <label for="f-name">First name</label>
-        <input class="fbox" id="f-name" name="name" type="text" autocomplete="given-name" placeholder="Your first name">
+        <input class="fbox" id="f-name" name="name" type="text" autocomplete="given-name" enterkeyhint="next" placeholder="Your first name">
       </div>
       <div class="field">
         <label>City</label>
@@ -98,7 +98,7 @@ body.is-done .done{display:flex}
       </div>
       <div class="field">
         <label for="f-email">Email</label>
-        <input class="fbox" id="f-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@email.com">
+        <input class="fbox" id="f-email" name="email" type="email" inputmode="email" autocomplete="email" enterkeyhint="done" placeholder="you@email.com">
       </div>
       <p class="err" id="form-err"></p>
       <button class="submit" id="submit-btn" type="submit">Join the waitlist
@@ -127,7 +127,7 @@ body.is-done .done{display:flex}
     <div class="grab"></div>
     <div class="search">
       <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
-      <input id="city-search" type="text" placeholder="Search your city" autocomplete="off" autocapitalize="words">
+      <input id="city-search" type="text" enterkeyhint="search" placeholder="Search your city" autocomplete="off" autocapitalize="words">
     </div>
     <div class="citylist" id="citylist"><p class="city-hint">Start typing to find your city.</p></div>
   </div>
@@ -155,10 +155,26 @@ function loadCities(){
     .catch(function(){ citiesLoading = false; citiesFailed = true; renderList(search.value); });
 }
 
-function openSheet(){ loadCities(); document.body.classList.add('sheet-open'); setTimeout(function(){ search.focus(); },350); }
+function openSheet(){
+  loadCities();
+  // iOS Safari: a programmatic focus only opens the keyboard when it runs
+  // synchronously inside the user gesture. Focus the search BEFORE animating the
+  // sheet up; preventScroll stops iOS jumping the page to the (still off-screen) input.
+  try { search.focus({ preventScroll: true }); } catch(e){ search.focus(); }
+  document.body.classList.add('sheet-open');
+}
 function closeSheet(){ document.body.classList.remove('sheet-open'); search.value=''; renderList(''); }
 cityBtn.addEventListener('click', openSheet);
 scrim.addEventListener('click', closeSheet);
+
+// first name → auto-advance to the city sheet: return/next key, or a space typed
+// after at least one character (the space = "done with first name", never stored).
+var nameEl=$('f-name');
+function advanceFromName(){ nameEl.value=nameEl.value.trim(); if(!nameEl.value){ return; } openSheet(); }
+nameEl.addEventListener('keydown', function(e){
+  if(e.key==='Enter'){ e.preventDefault(); advanceFromName(); }
+  else if(e.key===' ' && nameEl.value.trim().length>0){ e.preventDefault(); advanceFromName(); }
+});
 function pick(city){ cityInput.value=city; cityLabel.textContent=city; cityLabel.classList.remove('ph'); closeSheet(); }
 function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function useRow(raw){ return '<button type="button" class="city-row" data-city="'+esc(raw)+'"><span class="use">Use \u201C'+esc(raw)+'\u201D</span></button>'; }
@@ -195,6 +211,9 @@ list.addEventListener('click', function(e){ var b=e.target.closest('.city-row');
 var form=$('join-form'), errEl=$('form-err'), btn=$('submit-btn');
 form.addEventListener('submit', function(e){
   e.preventDefault();
+  // dismiss the keyboard (Enter on email or the submit tap both land here) so the
+  // squeezed viewport is released before we switch to the confirmation view.
+  if(document.activeElement && document.activeElement.blur){ document.activeElement.blur(); }
   var name=$('f-name').value.trim(), city=cityInput.value.trim(), email=$('f-email').value.trim();
   var msg='';
   if(!name){ msg='Please enter your first name.'; }
@@ -210,7 +229,13 @@ form.addEventListener('submit', function(e){
       else { btn.disabled=false; errEl.textContent='Something went wrong — please try again.'; errEl.style.display='block'; }
     });
 });
-function finish(city){ $('done-city').textContent=city.split(',')[0]; document.body.classList.add('is-done'); window.scrollTo(0,0); }
+function finish(city){
+  $('done-city').textContent=city.split(',')[0];
+  document.body.classList.add('is-done');
+  window.scrollTo(0,0);
+  // settle once more after the keyboard dismissal / layout release
+  requestAnimationFrame(function(){ window.scrollTo(0,0); });
+}
 </script>
 </body>
 </html>
