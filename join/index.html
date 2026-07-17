@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400..900&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}   /* author display:flex on .fbox/.city-actions otherwise beats the UA [hidden] rule */
 html,body{margin:0;padding:0}
 body{font-family:"Inter",-apple-system,system-ui,sans-serif;background:linear-gradient(168deg,#1C4530 0%,#123322 44%,#0B1F14 78%,#07140D 100%);min-height:100svh;color:#F4F2ED;-webkit-font-smoothing:antialiased}
 a{color:#9ED4B4;text-decoration:none}a:hover{color:#7BC295}
@@ -30,6 +31,22 @@ h1{margin:34px 0 0;font-size:38px;font-weight:800;letter-spacing:-1.4px;line-hei
 button.fbox{cursor:pointer;justify-content:space-between;text-align:left}
 button.fbox .ph{color:rgba(237,236,234,.4)}
 button.fbox svg{width:14px;height:14px;stroke:rgba(237,236,234,.55);stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round;flex:none}
+/* city step: primary "use my location" + secondary "search" */
+.city-actions{display:flex;gap:10px;align-items:stretch}
+.fbox.city-loc{flex:1;min-width:0;justify-content:flex-start;gap:10px;padding:0 18px}
+.city-loc .loc-ico{width:20px;height:20px;stroke:#7BC295;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.city-loc .loc-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.city-loc .loc-spin{display:none;width:18px;height:18px;border-radius:50%;border:2px solid rgba(123,194,149,.3);border-top-color:#7BC295;animation:locspin .7s linear infinite;flex:none}
+.city-loc.is-locating{color:rgba(237,236,234,.6)}
+.city-loc.is-locating .loc-ico{display:none}
+.city-loc.is-locating .loc-spin{display:block}
+.city-loc:disabled{cursor:default}
+@keyframes locspin{to{transform:rotate(360deg)}}
+.city-search-btn{flex:none;display:flex;align-items:center;justify-content:center;width:56px;height:56px;padding:0;border-radius:28px;background:none;border:1px solid rgba(123,194,149,.4);color:#9ED4B4;cursor:pointer;transition:border-color .25s ease,color .25s ease}
+.city-search-btn:hover{border-color:rgba(123,194,149,.75);color:#7BC295}
+.city-search-btn svg{width:19px;height:19px;stroke:currentColor;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.city-chosen .change{color:#9ED4B4;font-size:13.5px;font-weight:700;flex:none;margin-left:12px}
+.loc-msg{margin:10px 2px 0;font-size:13.5px;line-height:1.4;color:#e8a598}
 .submit{width:100%;height:58px;margin-top:30px;border-radius:29px;border:none;cursor:pointer;background:#F4F2ED;color:#14301F;font-family:inherit;font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:9px;box-shadow:0 6px 18px rgba(0,0,0,.3);transition:transform .25s cubic-bezier(.16,1,.3,1)}
 .submit:active{transform:scale(.96)}
 .submit svg{width:15px;height:15px;stroke:#14301F;stroke-width:2.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
@@ -89,11 +106,25 @@ body.is-done .done{display:flex}
     <form id="join-form" novalidate>
       <div class="field">
         <label for="f-name">First name</label>
-        <input class="fbox" id="f-name" name="name" type="text" autocomplete="given-name" enterkeyhint="next" placeholder="Your first name">
+        <input class="fbox" id="f-name" name="name" type="text" autocomplete="given-name" enterkeyhint="done" placeholder="Your first name">
       </div>
-      <div class="field">
+      <div class="field" id="city-field">
         <label>City</label>
-        <button class="fbox" id="city-btn" type="button" aria-haspopup="dialog"><span class="ph" id="city-label">Select your city</span><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"></path></svg></button>
+        <div class="city-actions" id="city-actions">
+          <button class="fbox city-loc" id="loc-btn" type="button">
+            <svg class="loc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11L22 2L13 21L11 13Z"></path></svg>
+            <span class="loc-spin" aria-hidden="true"></span>
+            <span class="loc-label" id="loc-label">Use my current location</span>
+          </button>
+          <button class="city-search-btn" id="city-btn" type="button" aria-haspopup="dialog" aria-label="Search for your city">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+          </button>
+        </div>
+        <button class="fbox city-chosen" id="city-chosen" type="button" hidden>
+          <span id="city-chosen-label"></span>
+          <span class="change">Change</span>
+        </button>
+        <p class="loc-msg" id="loc-msg" hidden></p>
         <input type="hidden" id="f-city" name="city">
       </div>
       <div class="field">
@@ -137,7 +168,7 @@ body.is-done .done{display:flex}
 var CITIES = null, CITIES_LC = null;   // lazy-loaded from site/us-cities.json when the sheet opens
 var citiesLoading = false, citiesFailed = false;
 var $ = function(id){ return document.getElementById(id); };
-var sheet=$('sheet'), scrim=$('scrim'), search=$('city-search'), list=$('citylist'), cityBtn=$('city-btn'), cityLabel=$('city-label'), cityInput=$('f-city');
+var sheet=$('sheet'), scrim=$('scrim'), search=$('city-search'), list=$('citylist'), cityBtn=$('city-btn'), cityInput=$('f-city');
 
 // comprehensive US city list — fetched once, only when the sheet is first opened
 function loadCities(){
@@ -167,15 +198,78 @@ function closeSheet(){ document.body.classList.remove('sheet-open'); search.valu
 cityBtn.addEventListener('click', openSheet);
 scrim.addEventListener('click', closeSheet);
 
-// first name → auto-advance to the city sheet: return/next key, or a space typed
-// after at least one character (the space = "done with first name", never stored).
+// first name → complete the field (return/done key, or a space typed after at least
+// one character). This dismisses the keyboard so the viewport settles back to the full
+// page; it does NOT open the city sheet — the user taps the City field for that.
 var nameEl=$('f-name');
-function advanceFromName(){ nameEl.value=nameEl.value.trim(); if(!nameEl.value){ return; } openSheet(); }
+function completeName(){ nameEl.value=nameEl.value.trim(); if(!nameEl.value){ return; } nameEl.blur(); }
 nameEl.addEventListener('keydown', function(e){
-  if(e.key==='Enter'){ e.preventDefault(); advanceFromName(); }
-  else if(e.key===' ' && nameEl.value.trim().length>0){ e.preventDefault(); advanceFromName(); }
+  if(e.key==='Enter'){ e.preventDefault(); completeName(); }
+  else if(e.key===' ' && nameEl.value.trim().length>0){ e.preventDefault(); completeName(); }
 });
-function pick(city){ cityInput.value=city; cityLabel.textContent=city; cityLabel.classList.remove('ph'); closeSheet(); }
+// ── chosen-city display + the two ways to set it (search sheet OR geolocation) ──
+var cityActions=$('city-actions'), cityChosen=$('city-chosen'), chosenLabel=$('city-chosen-label');
+function setCity(city){
+  cityInput.value = city;
+  chosenLabel.textContent = city;
+  cityActions.hidden = true;
+  cityChosen.hidden = false;
+  hideLocMsg();
+}
+function pick(city){ setCity(city); closeSheet(); }   // from the search sheet
+// tap the chosen city → reveal the two options again (kept value until a new one is set)
+cityChosen.addEventListener('click', function(){ cityActions.hidden=false; cityChosen.hidden=true; });
+
+// ── "Use my current location" → geolocation → BigDataCloud reverse-geocode → "City, ST" ──
+var locBtn=$('loc-btn'), locLabel=$('loc-label'), locMsg=$('loc-msg'), locating=false;
+function showLocMsg(t){ locMsg.textContent=t; locMsg.hidden=false; }
+function hideLocMsg(){ locMsg.hidden=true; locMsg.textContent=''; }
+function setLocating(on){ locating=on; locBtn.classList.toggle('is-locating', on); locBtn.disabled=on; locLabel.textContent = on ? 'Locating…' : 'Use my current location'; }
+function geoAvailable(){ return ('geolocation' in navigator) && (location.protocol==='https:' || location.hostname==='localhost' || location.hostname==='127.0.0.1'); }
+
+// full state/territory name → USPS abbreviation
+var STATE_ABBR={ "Alabama":"AL","Alaska":"AK","Arizona":"AZ","Arkansas":"AR","California":"CA","Colorado":"CO","Connecticut":"CT","Delaware":"DE","District of Columbia":"DC","Florida":"FL","Georgia":"GA","Hawaii":"HI","Idaho":"ID","Illinois":"IL","Indiana":"IN","Iowa":"IA","Kansas":"KS","Kentucky":"KY","Louisiana":"LA","Maine":"ME","Maryland":"MD","Massachusetts":"MA","Michigan":"MI","Minnesota":"MN","Mississippi":"MS","Missouri":"MO","Montana":"MT","Nebraska":"NE","Nevada":"NV","New Hampshire":"NH","New Jersey":"NJ","New Mexico":"NM","New York":"NY","North Carolina":"NC","North Dakota":"ND","Ohio":"OH","Oklahoma":"OK","Oregon":"OR","Pennsylvania":"PA","Rhode Island":"RI","South Carolina":"SC","South Dakota":"SD","Tennessee":"TN","Texas":"TX","Utah":"UT","Vermont":"VT","Virginia":"VA","Washington":"WA","West Virginia":"WV","Wisconsin":"WI","Wyoming":"WY","Puerto Rico":"PR","Guam":"GU","U.S. Virgin Islands":"VI","American Samoa":"AS","Northern Mariana Islands":"MP" };
+
+function toCityST(data){
+  if(!data){ return ''; }
+  var city = data.city || data.locality || '';
+  var st = STATE_ABBR[data.principalSubdivision || ''] || '';
+  // fallback: BigDataCloud also returns principalSubdivisionCode like "US-NY"
+  if(!st && data.principalSubdivisionCode){ var m=/-([A-Z]{2})$/.exec(data.principalSubdivisionCode); if(m){ st=m[1]; } }
+  if(!city){ return ''; }
+  return st ? (city + ', ' + st) : city;
+}
+
+if(!geoAvailable()){
+  // non-secure / unsupported: drop the location primary, let Search fill the row
+  locBtn.hidden = true;
+  cityBtn.style.flex = '1';
+  cityBtn.style.justifyContent = 'center';
+}
+
+locBtn.addEventListener('click', function(){
+  if(locating){ return; }
+  hideLocMsg();
+  setLocating(true);
+  var done=false, master;
+  function fail(msg){ if(done){ return; } done=true; clearTimeout(master); setLocating(false); showLocMsg(msg); }
+  master=setTimeout(function(){ fail('Couldn’t get your location — try Search instead.'); }, 8000);
+  navigator.geolocation.getCurrentPosition(function(pos){
+    if(done){ return; }
+    fetch('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude='+pos.coords.latitude+'&longitude='+pos.coords.longitude+'&localityLanguage=en')
+      .then(function(r){ if(!r.ok){ throw new Error(r.status); } return r.json(); })
+      .then(function(data){
+        if(done){ return; }
+        var cs=toCityST(data);
+        if(!cs){ fail('Couldn’t find your city — try Search instead.'); return; }
+        done=true; clearTimeout(master); setLocating(false); setCity(cs);
+        if(document.activeElement && document.activeElement.blur){ document.activeElement.blur(); }
+      })
+      .catch(function(){ fail('Couldn’t get your location — try Search instead.'); });
+  }, function(err){
+    fail(err && err.code===1 ? 'Location access needed — try Search instead.' : 'Couldn’t get your location — try Search instead.');
+  }, { enableHighAccuracy:false, timeout:8000, maximumAge:600000 });
+});
 function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function useRow(raw){ return '<button type="button" class="city-row" data-city="'+esc(raw)+'"><span class="use">Use \u201C'+esc(raw)+'\u201D</span></button>'; }
 
