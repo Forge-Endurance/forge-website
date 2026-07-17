@@ -59,22 +59,16 @@ button.fbox svg{width:14px;height:14px;stroke:rgba(237,236,234,.55);stroke-width
 .submit svg{width:15px;height:15px;stroke:#14301F;stroke-width:2.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
 .submit[disabled]{opacity:.6}
 .err{margin:10px 2px 0;font-size:13.5px;color:#e8a598;display:none}
-/* city sheet */
-.scrim{position:fixed;inset:0;background:rgba(4,10,7,.6);opacity:0;pointer-events:none;transition:opacity .3s ease;z-index:40}
-.sheet{position:fixed;left:0;right:0;bottom:0;top:18svh;background:#F4F2ED;border-radius:28px 28px 0 0;z-index:50;padding:18px 24px 24px;box-shadow:0 -20px 60px rgba(0,0,0,.45);transform:translateY(105%);transition:transform .4s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column}
-.sheet .inner-shell{max-width:432px;margin:0 auto;width:100%;display:flex;flex-direction:column;min-height:0;flex:1}
-body.sheet-open .scrim{opacity:1;pointer-events:auto}
-body.sheet-open .sheet{transform:none}
-.grab{width:44px;height:5px;border-radius:3px;background:#d5d2c8;margin:0 auto 14px;flex:none}
-.search{display:flex;align-items:center;gap:10px;height:48px;border-radius:24px;background:#e9e6de;padding:0 18px;flex:none}
-.search svg{width:16px;height:16px;stroke:#8a8880;stroke-width:2.2;fill:none;stroke-linecap:round;flex:none}
-.search input{flex:1;min-width:0;border:none;background:none;font-family:inherit;font-size:16px;color:#1A1814;outline:none}
-.search input::placeholder{color:#9a978e}
-.citylist{margin-top:8px;overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch}
-.city-row{display:flex;align-items:center;width:100%;background:none;border:none;cursor:pointer;font-family:inherit;text-align:left;padding:15px 4px;border-bottom:1px solid #e4e1d8;font-size:16px;font-weight:600;color:#1A1814}
-.city-row:active{background:#ece9e1}
-.city-row .use{color:#1E4D35}
-.city-hint{padding:16px 4px;font-size:14px;color:#9a978e}
+/* city inline search + dark dropdown (replaces the bottom sheet) */
+.city-search{position:relative}
+.city-search .fbox{width:100%}
+.city-dd{position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:30;max-height:264px;overflow-y:auto;-webkit-overflow-scrolling:touch;background:rgba(9,20,14,.98);border:1px solid rgba(123,194,149,.4);border-radius:18px;box-shadow:0 18px 46px rgba(0,0,0,.5)}
+.city-dd:empty{display:none}
+.city-row{display:block;width:100%;text-align:left;background:none;border:none;border-bottom:1px solid rgba(244,242,237,.08);padding:13px 18px;font-family:inherit;font-size:15.5px;font-weight:500;color:#F4F2ED;cursor:pointer}
+.city-row:last-child{border-bottom:none}
+.city-row:hover,.city-row:active{background:rgba(123,194,149,.14)}
+.city-row .use{color:#9ED4B4;font-weight:700}
+.city-hint{padding:14px 18px;font-size:14px;color:rgba(237,236,234,.5)}
 /* confirmation */
 .done{display:none;flex:1;flex-direction:column;text-align:center;padding-top:9svh}
 body.is-done .join-view{display:none}
@@ -134,6 +128,10 @@ body.is-done .done{display:flex}
           <span id="city-chosen-label"></span>
           <span class="change">Change</span>
         </button>
+        <div class="city-search" id="city-search-wrap" hidden>
+          <input class="fbox" id="city-search" type="text" enterkeyhint="search" placeholder="Search your city" autocomplete="off" autocapitalize="words">
+          <div class="city-dd" id="citylist"></div>
+        </div>
         <p class="loc-msg" id="loc-msg" hidden></p>
         <input type="hidden" id="f-city" name="city">
       </div>
@@ -161,25 +159,14 @@ body.is-done .done{display:flex}
   </div>
 </div>
 
-<div class="scrim" id="scrim"></div>
-<div class="sheet" id="sheet" role="dialog" aria-label="Choose your city">
-  <div class="inner-shell">
-    <div class="grab"></div>
-    <div class="search">
-      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
-      <input id="city-search" type="text" enterkeyhint="search" placeholder="Search your city" autocomplete="off" autocapitalize="words">
-    </div>
-    <div class="citylist" id="citylist"><p class="city-hint">Start typing to find your city.</p></div>
-  </div>
-</div>
-
 <script>
-var CITIES = null, CITIES_LC = null;   // lazy-loaded from site/us-cities.json when the sheet opens
+var CITIES = null, CITIES_LC = null;   // lazy-loaded from site/us-cities.json (population-ranked)
 var citiesLoading = false, citiesFailed = false;
 var $ = function(id){ return document.getElementById(id); };
-var sheet=$('sheet'), scrim=$('scrim'), search=$('city-search'), list=$('citylist'), cityBtn=$('city-btn'), cityInput=$('f-city');
+var search=$('city-search'), list=$('citylist'), cityBtn=$('city-btn'), cityInput=$('f-city'), cityField=$('city-field'), searchWrap=$('city-search-wrap');
 
-// comprehensive US city list — fetched once, only when the sheet is first opened
+// comprehensive US city list — fetched once, only when the user first enters city search
+// (or taps geolocation, which uses it to cross-check the reverse-geocode result)
 function loadCities(){
   if(CITIES || citiesLoading){ return; }
   citiesLoading = true;
@@ -195,17 +182,30 @@ function loadCities(){
     .catch(function(){ citiesLoading = false; citiesFailed = true; renderList(search.value); });
 }
 
-function openSheet(){
-  loadCities();
-  // iOS Safari: a programmatic focus only opens the keyboard when it runs
-  // synchronously inside the user gesture. Focus the search BEFORE animating the
-  // sheet up; preventScroll stops iOS jumping the page to the (still off-screen) input.
-  try { search.focus({ preventScroll: true }); } catch(e){ search.focus(); }
-  document.body.classList.add('sheet-open');
+// city row states: 'pill' (two-action) | 'chosen' (City, ST + Change) | 'search' (inline input + dropdown)
+function showState(which){
+  cityActions.hidden = which!=='pill';
+  cityChosen.hidden  = which!=='chosen';
+  searchWrap.hidden  = which!=='search';
 }
-function closeSheet(){ document.body.classList.remove('sheet-open'); search.value=''; renderList(''); }
-cityBtn.addEventListener('click', openSheet);
-scrim.addEventListener('click', closeSheet);
+function enterSearch(){
+  loadCities();                        // lazy: first entry into search state
+  showState('search');
+  search.value=''; renderList('');
+  // iOS Safari: focus synchronously inside the tap gesture so the keyboard opens.
+  try { search.focus({ preventScroll: true }); } catch(e){ search.focus(); }
+  document.addEventListener('pointerdown', outsideClose, true);
+}
+function exitSearch(){
+  document.removeEventListener('pointerdown', outsideClose, true);
+  search.value=''; renderList('');
+  showState(cityInput.value ? 'chosen' : 'pill');   // never clears an existing city
+}
+function outsideClose(e){ if(!cityField.contains(e.target)){ exitSearch(); } }
+// tapping the round search button (or "Change") enters inline search
+cityBtn.addEventListener('click', enterSearch);
+// don't let Enter inside the inline input submit the form
+search.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); } });
 
 // first name → complete the field (return/done key, or a space typed after at least
 // one character). This dismisses the keyboard so the viewport settles back to the full
@@ -221,14 +221,19 @@ var cityActions=$('city-actions'), cityChosen=$('city-chosen'), chosenLabel=$('c
 function setCity(city){
   cityInput.value = city;
   chosenLabel.textContent = city;
-  cityActions.hidden = true;
-  cityChosen.hidden = false;
   hideLocMsg();
+  showState('chosen');
 }
-function pick(city){ setCity(city); closeSheet(); }   // from the search sheet
-// tap "Change" → open the search sheet directly; the current city stays set unless the
-// user picks a new one (closing the sheet without picking leaves it intact).
-cityChosen.addEventListener('click', openSheet);
+function pick(city){   // tapped a dropdown row
+  document.removeEventListener('pointerdown', outsideClose, true);
+  setCity(city);
+  search.value=''; renderList('');
+  if(document.activeElement && document.activeElement.blur){ document.activeElement.blur(); }  // dismiss keyboard
+  window.scrollTo(0,0); requestAnimationFrame(function(){ window.scrollTo(0,0); });             // settle view
+}
+// tap "Change" → re-enter inline search; the existing city stays set unless a new row is
+// picked (dismissing without picking leaves it intact).
+cityChosen.addEventListener('click', enterSearch);
 
 // ── "Use my current location" → geolocation → BigDataCloud reverse-geocode → "City, ST" ──
 var locBtn=$('loc-btn'), locLabel=$('loc-label'), locMsg=$('loc-msg'), locating=false;
@@ -240,14 +245,49 @@ function geoAvailable(){ return ('geolocation' in navigator) && (location.protoc
 // full state/territory name → USPS abbreviation
 var STATE_ABBR={ "Alabama":"AL","Alaska":"AK","Arizona":"AZ","Arkansas":"AR","California":"CA","Colorado":"CO","Connecticut":"CT","Delaware":"DE","District of Columbia":"DC","Florida":"FL","Georgia":"GA","Hawaii":"HI","Idaho":"ID","Illinois":"IL","Indiana":"IN","Iowa":"IA","Kansas":"KS","Kentucky":"KY","Louisiana":"LA","Maine":"ME","Maryland":"MD","Massachusetts":"MA","Michigan":"MI","Minnesota":"MN","Mississippi":"MS","Missouri":"MO","Montana":"MT","Nebraska":"NE","Nevada":"NV","New Hampshire":"NH","New Jersey":"NJ","New Mexico":"NM","New York":"NY","North Carolina":"NC","North Dakota":"ND","Ohio":"OH","Oklahoma":"OK","Oregon":"OR","Pennsylvania":"PA","Rhode Island":"RI","South Carolina":"SC","South Dakota":"SD","Tennessee":"TN","Texas":"TX","Utah":"UT","Vermont":"VT","Virginia":"VA","Washington":"WA","West Virginia":"WV","Wisconsin":"WI","Wyoming":"WY","Puerto Rico":"PR","Guam":"GU","U.S. Virgin Islands":"VI","American Samoa":"AS","Northern Mariana Islands":"MP" };
 
+function normKey(s){ return (s||'').toLowerCase().replace(/,/g,'').replace(/\s+/g,' ').trim(); }
+// find a verbatim dataset entry for a "name, ST" (population-ranked list, normalized compare)
+function datasetLookup(name, st){
+  if(!CITIES){ return null; }
+  var key = normKey(name + ' ' + st);
+  for(var i=0;i<CITIES_LC.length;i++){ if(CITIES_LC[i]===key){ return CITIES[i]; } }
+  return null;
+}
+function stateOf(data){
+  var st = STATE_ABBR[data.principalSubdivision || ''] || '';
+  if(!st && data.principalSubdivisionCode){ var m=/-([A-Z]{2})$/.exec(data.principalSubdivisionCode); if(m){ st=m[1]; } }
+  return st;
+}
+// is `name` a sub-city division (NYC borough, neighborhood…)? — read its localityInfo description
+function isSubCity(name, data){
+  if(!name || !data.localityInfo){ return false; }
+  var all = (data.localityInfo.administrative||[]).concat(data.localityInfo.informative||[]);
+  for(var i=0;i<all.length;i++){
+    if(all[i].name && all[i].name.toLowerCase()===name.toLowerCase()){
+      var d = (all[i].description||'').toLowerCase();
+      if(/\b(borough|neighbou?rhood|quarter|ward|suburb)\b/.test(d) || /section of\b/.test(d) || /district of\b/.test(d)){ return true; }
+    }
+  }
+  return false;
+}
+// Prefer the precise locality over the coarse (metro) city field — BigDataCloud's `city`
+// returns the nearest metro (Ellicott City → "Baltimore"), while `locality` is the actual
+// place ("Ellicott City"). Guard against over-precise sub-city values (Manhattan → borough)
+// by falling back to the coarser city. Cross-check our dataset for a verbatim, search-matching string.
 function toCityST(data){
   if(!data){ return ''; }
-  var city = data.city || data.locality || '';
-  var st = STATE_ABBR[data.principalSubdivision || ''] || '';
-  // fallback: BigDataCloud also returns principalSubdivisionCode like "US-NY"
-  if(!st && data.principalSubdivisionCode){ var m=/-([A-Z]{2})$/.exec(data.principalSubdivisionCode); if(m){ st=m[1]; } }
-  if(!city){ return ''; }
-  return st ? (city + ', ' + st) : city;
+  var st = stateOf(data);
+  var precise = data.locality || '';
+  var coarse  = data.city || '';
+  if(precise && isSubCity(precise, data)){ precise = ''; }   // borough/neighborhood → use the coarser city
+  if(!st){ return precise || coarse || ''; }                 // no state (rare) — best effort
+  if(precise){
+    return datasetLookup(precise, st) || (precise + ', ' + st);   // in dataset → verbatim; else precise free value
+  }
+  if(coarse){
+    return datasetLookup(coarse, st) || (coarse + ', ' + st);
+  }
+  return '';
 }
 
 if(!geoAvailable()){
@@ -260,6 +300,7 @@ if(!geoAvailable()){
 locBtn.addEventListener('click', function(){
   if(locating){ return; }
   hideLocMsg();
+  loadCities();          // so toCityST() can cross-check the geocode result against our list
   setLocating(true);
   var done=false, master;
   function fail(msg){ if(done){ return; } done=true; clearTimeout(master); setLocating(false); showLocMsg(msg); }
@@ -285,7 +326,7 @@ function useRow(raw){ return '<button type="button" class="city-row" data-city="
 
 function renderList(q){
   var raw=(q||'').trim();
-  if(!raw){ list.innerHTML='<p class="city-hint">Start typing to find your city.</p>'; return; }
+  if(!raw){ list.innerHTML=''; return; }   /* empty query -> dropdown hides via .city-dd:empty */
   var qq=raw.toLowerCase().replace(/,/g,'').replace(/\s+/g,' ');
   if(!CITIES){
     // dataset still loading (or failed to load) — keep the "Use ..." escape hatch available
@@ -293,19 +334,21 @@ function renderList(q){
     list.innerHTML = '<p class="city-hint">'+note+'</p>' + (raw.length>2 ? useRow(raw) : '');
     return;
   }
+  // collect in DATASET ORDER (population-ranked) — no alphabetical re-sort. two buckets:
+  // prefix matches rank above substring matches, each preserving dataset order.
   var starts=[], contains=[];
   for(var i=0;i<CITIES_LC.length;i++){
     var idx=CITIES_LC[i].indexOf(qq);
     if(idx===0){ starts.push(CITIES[i]); }
     else if(idx>0){ contains.push(CITIES[i]); }
-    if(starts.length>=30){ break; }
+    if(starts.length>=8){ break; }
   }
-  var matches=starts.concat(contains).slice(0,30);
+  var matches=starts.concat(contains).slice(0,8);
   var html='';
   for(var j=0;j<matches.length;j++){ html+='<button type="button" class="city-row" data-city="'+esc(matches[j])+'">'+esc(matches[j])+'</button>'; }
   var exact=matches.some(function(m){ return m.toLowerCase()===raw.toLowerCase(); });
   if(raw.length>2 && !exact){ html+=useRow(raw); }
-  list.innerHTML = html || useRow(raw);
+  list.innerHTML = html;
 }
 
 var searchTimer=null;
