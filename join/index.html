@@ -31,27 +31,33 @@ h1{margin:34px 0 0;font-size:38px;font-weight:800;letter-spacing:-1.4px;line-hei
 button.fbox{cursor:pointer;justify-content:space-between;text-align:left}
 button.fbox .ph{color:rgba(237,236,234,.4)}
 button.fbox svg{width:14px;height:14px;stroke:rgba(237,236,234,.55);stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round;flex:none}
-/* city step: primary "use my location" + secondary "search" */
-.city-actions{display:flex;gap:10px;align-items:stretch}
-.fbox.city-loc{flex:1;min-width:0;justify-content:flex-start;gap:10px;padding:0 18px}
-.city-loc .loc-ico{width:20px;height:20px;stroke:#7BC295;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round;flex:none}
-.city-loc .loc-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.city-loc .loc-spin{display:none;width:18px;height:18px;border-radius:50%;border:2px solid rgba(123,194,149,.3);border-top-color:#7BC295;animation:locspin .7s linear infinite;flex:none}
-.city-loc.is-locating{color:rgba(237,236,234,.6)}
-.city-loc.is-locating .loc-ico{display:none}
-.city-loc.is-locating .loc-spin{display:block}
-.city-loc:disabled{cursor:default}
+/* city step: one full-width pill — locate label (grows) + divider + round search button */
+.city-actions{display:block}
+.fbox.city-loc{display:flex;align-items:center;gap:13px;padding:0 7px 0 22px}
+.loc-hit{flex:1;min-width:0;display:flex;align-items:center;gap:10px;height:100%;background:none;border:none;margin:0;padding:0;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.loc-hit .loc-ico{width:20px;height:20px;stroke:#7BC295;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.loc-hit .loc-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.loc-hit .loc-spin{display:none;width:18px;height:18px;border-radius:50%;border:2px solid rgba(123,194,149,.3);border-top-color:#7BC295;animation:locspin .7s linear infinite;flex:none}
+.loc-hit.is-locating{color:rgba(237,236,234,.6)}
+.loc-hit.is-locating .loc-ico{display:none}
+.loc-hit.is-locating .loc-spin{display:block}
+.loc-hit:disabled{cursor:default}
 @keyframes locspin{to{transform:rotate(360deg)}}
-.city-search-btn{flex:none;display:flex;align-items:center;justify-content:center;width:56px;height:56px;padding:0;border-radius:28px;background:none;border:1px solid rgba(123,194,149,.4);color:#9ED4B4;cursor:pointer;transition:border-color .25s ease,color .25s ease}
-.city-search-btn:hover{border-color:rgba(123,194,149,.75);color:#7BC295}
+.city-div{width:1px;height:26px;background:rgba(255,255,255,.14);flex:none}
+.city-search-btn{flex:none;display:flex;align-items:center;justify-content:center;width:48px;height:48px;padding:0;border-radius:24px;background:rgba(255,255,255,.08);border:none;color:#7BC295;cursor:pointer;transition:background .2s ease}
+.city-search-btn:hover{background:rgba(255,255,255,.14)}
 .city-search-btn svg{width:19px;height:19px;stroke:currentColor;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.cs-label{display:none}
+.city-loc.geo-off{padding:0 22px}
+.city-loc.geo-off .city-search-btn{flex:1;width:auto;justify-content:flex-start;gap:12px;background:none;border-radius:0;padding:0;color:#F4F2ED}
+.city-loc.geo-off .city-search-btn svg{stroke:#7BC295}
+.city-loc.geo-off .cs-label{display:inline;font-size:16px}
 .city-chosen .change{color:#9ED4B4;font-size:13.5px;font-weight:700;flex:none;margin-left:12px}
 .loc-msg{margin:10px 2px 0;font-size:13.5px;line-height:1.4;color:#e8a598}
 .submit{width:100%;height:58px;margin-top:30px;border-radius:29px;border:none;cursor:pointer;background:#F4F2ED;color:#14301F;font-family:inherit;font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:9px;box-shadow:0 6px 18px rgba(0,0,0,.3);transition:transform .25s cubic-bezier(.16,1,.3,1)}
 .submit:active{transform:scale(.96)}
 .submit svg{width:15px;height:15px;stroke:#14301F;stroke-width:2.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
 .submit[disabled]{opacity:.6}
-.privacy{margin:14px 0 0;text-align:center;font-size:12.5px;color:rgba(237,236,234,.45)}
 .err{margin:10px 2px 0;font-size:13.5px;color:#e8a598;display:none}
 /* city sheet */
 .scrim{position:fixed;inset:0;background:rgba(4,10,7,.6);opacity:0;pointer-events:none;transition:opacity .3s ease;z-index:40}
@@ -111,14 +117,18 @@ body.is-done .done{display:flex}
       <div class="field" id="city-field">
         <label>City</label>
         <div class="city-actions" id="city-actions">
-          <button class="fbox city-loc" id="loc-btn" type="button">
-            <svg class="loc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11L22 2L13 21L11 13Z"></path></svg>
-            <span class="loc-spin" aria-hidden="true"></span>
-            <span class="loc-label" id="loc-label">Use my current location</span>
-          </button>
-          <button class="city-search-btn" id="city-btn" type="button" aria-haspopup="dialog" aria-label="Search for your city">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
-          </button>
+          <div class="fbox city-loc" id="city-pill">
+            <button class="loc-hit" id="loc-btn" type="button">
+              <svg class="loc-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11L22 2L13 21L11 13Z"></path></svg>
+              <span class="loc-spin" aria-hidden="true"></span>
+              <span class="loc-label" id="loc-label">Use my current location</span>
+            </button>
+            <span class="city-div" aria-hidden="true"></span>
+            <button class="city-search-btn" id="city-btn" type="button" aria-haspopup="dialog" aria-label="Search for your city">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+              <span class="cs-label">Search your city</span>
+            </button>
+          </div>
         </div>
         <button class="fbox city-chosen" id="city-chosen" type="button" hidden>
           <span id="city-chosen-label"></span>
@@ -135,7 +145,6 @@ body.is-done .done{display:flex}
       <button class="submit" id="submit-btn" type="submit">Join the waitlist
         <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
       </button>
-      <p class="privacy">No spam — one email when your city opens.</p>
     </form>
   </div>
 
@@ -217,8 +226,9 @@ function setCity(city){
   hideLocMsg();
 }
 function pick(city){ setCity(city); closeSheet(); }   // from the search sheet
-// tap the chosen city → reveal the two options again (kept value until a new one is set)
-cityChosen.addEventListener('click', function(){ cityActions.hidden=false; cityChosen.hidden=true; });
+// tap "Change" → open the search sheet directly; the current city stays set unless the
+// user picks a new one (closing the sheet without picking leaves it intact).
+cityChosen.addEventListener('click', openSheet);
 
 // ── "Use my current location" → geolocation → BigDataCloud reverse-geocode → "City, ST" ──
 var locBtn=$('loc-btn'), locLabel=$('loc-label'), locMsg=$('loc-msg'), locating=false;
@@ -241,10 +251,10 @@ function toCityST(data){
 }
 
 if(!geoAvailable()){
-  // non-secure / unsupported: drop the location primary, let Search fill the row
+  // non-secure / unsupported: collapse the pill to a search-only field
   locBtn.hidden = true;
-  cityBtn.style.flex = '1';
-  cityBtn.style.justifyContent = 'center';
+  document.querySelector('.city-div').hidden = true;
+  document.getElementById('city-pill').classList.add('geo-off');
 }
 
 locBtn.addEventListener('click', function(){
@@ -322,6 +332,18 @@ form.addEventListener('submit', function(e){
       if(location.protocol==='file:' || location.hostname==='localhost' || location.hostname.indexOf('forgendurance')===-1 && location.hostname.indexOf('netlify')===-1){ finish(city); }
       else { btn.disabled=false; errEl.textContent='Something went wrong — please try again.'; errEl.style.display='block'; }
     });
+});
+// email: a space acts as done — but only once the value already validates as an email.
+// Emails never contain spaces, so the space is always suppressed; if the value isn't a
+// valid email yet the user is mid-typing, so we swallow it silently (no submit, no error).
+var EMAIL_RE=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+$('f-email').addEventListener('keydown', function(e){
+  if(e.key!==' '){ return; }
+  e.preventDefault();
+  if(!EMAIL_RE.test(this.value.trim())){ return; }
+  this.blur();   // dismiss keyboard / settle viewport, then run the one submit funnel
+  if(form.requestSubmit){ form.requestSubmit(); }
+  else { form.dispatchEvent(new Event('submit',{cancelable:true,bubbles:true})); }
 });
 function finish(city){
   $('done-city').textContent=city.split(',')[0];
